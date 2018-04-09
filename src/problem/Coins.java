@@ -14,7 +14,6 @@ public class Coins {
                 dp[j] += dp[j - coins[i]];
             }
         }
-        int a;
         return dp[n];
 //        int[][] dp = new int[coins.length][n + 1];
 //        for (int i = 0; i < coins.length; i++) {
