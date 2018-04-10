@@ -22,7 +22,7 @@ import java.util.List;
 public class Sort {
     public static void main(String[] args) {
         int[] arr = {2, 8, 10, 5, 6, 3, 4, 2, 7, 5};
-//        int[] result = BubbleSort(arr);
+        int[] result = BubbleSort(arr);
 //        int[] result = SelectionSort(arr);
 //        int[] result = InsertionSort(arr);
 //        int[] result = ShellSort(arr);
@@ -31,7 +31,7 @@ public class Sort {
 //        int[] result = QuickSort(arr);
 //        int[] result = CountingSort(arr);
 //        int[] result = BucketSort(arr);
-        int[] result = RadixSort(arr);
+//        int[] result = RadixSort(arr);
         for (Integer i : result) System.out.print(i + " ");
     }
 
@@ -41,7 +41,7 @@ public class Sort {
      */
     public static int[] BubbleSort(int[] arr) {
         for (int i = 0; i < arr.length; i++) {  // i只起到计数作用
-            for (int j = 0; j < arr.length - i; j++) {
+            for (int j = 0; j < arr.length - i - 1; j++) {
                 if (arr[j] > arr[j + 1]) {
                     int tmp = arr[j];
                     arr[j] = arr[j + 1];
