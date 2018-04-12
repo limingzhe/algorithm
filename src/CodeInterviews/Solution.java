@@ -803,15 +803,15 @@ public class Solution {
     习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
      */
     public int GetUglyNumber_Solution(int index) {
-        if (index < 7)  return index;
+        if (index < 7) return index;
         int[] res = new int[index];
         res[0] = 1;
         int t2 = 0, t3 = 0, t5 = 0;
         for (int i = 1; i < index; i++) {
             res[i] = Math.min(res[t2] * 2, Math.min(res[t3] * 3, res[t5] * 5));
-            if (res[i] == res[t2] * 2)  t2++;
-            if (res[i] == res[t3] * 3)  t3++;
-            if (res[i] == res[t5] * 5)  t5++;
+            if (res[i] == res[t2] * 2) t2++;
+            if (res[i] == res[t3] * 3) t3++;
+            if (res[i] == res[t5] * 5) t5++;
         }
         return res[index - 1];
     }
@@ -837,4 +837,330 @@ public class Solution {
         }
         return -1;
     }
+
+    /*
+    在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。
+    并将P对1000000007取模的结果输出。 即输出P%1000000007
+     */
+    public int InversePairs(int[] array) {
+        if (array == null || array.length <= 0) {
+            return 0;
+        }
+        int pairsNum = mergeSort(array, 0, array.length - 1);
+        return pairsNum;
+    }
+
+
+    private int mergeSort(int[] array, int left, int right) {
+        if (left == right) {
+            return 0;
+        }
+        int mid = (left + right) / 2;
+        int leftNum = mergeSort(array, left, mid);
+        int rightNum = mergeSort(array, mid + 1, right);
+        return (Sort(array, left, mid, right) + leftNum + rightNum) % 1000000007;
+    }
+
+
+    private int Sort(int[] a, int start, int mid, int end) {
+        int cnt = 0;
+        int[] tmp = new int[end - start + 1];
+
+        int i = start, j = mid + 1, k = 0;
+        while (i <= mid && j <= end) {
+            if (a[i] <= a[j])
+                tmp[k++] = a[i++];
+            else {
+                tmp[k++] = a[j++];
+                cnt += mid - i + 1;// core code, calculate InversePairs............
+                if (cnt > 1000000007) cnt %= 1000000007;
+            }
+        }
+
+        while (i <= mid)
+            tmp[k++] = a[i++];
+        while (j <= end)
+            tmp[k++] = a[j++];
+        for (k = 0; k < tmp.length; k++)
+            a[start + k] = tmp[k];
+        return cnt;
+    }
+
+    /*
+    输入两个链表，找出它们的第一个公共结点。
+     */
+    public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
+        ListNode p1 = pHead1;
+        ListNode p2 = pHead2;
+        while (p1 != p2) {
+            p1 = (p1 == null ? pHead2 : p1.next);
+            p2 = (p2 == null ? pHead1 : p2.next);
+        }
+        return p1;
+    }
+
+    /*
+    统计一个数字在排序数组中出现的次数。
+     */
+
+    public int GetNumberOfK(int[] array, int k) {
+        int length = array.length;
+        if (length == 0) {
+            return 0;
+        }
+        int firstK = getFirstK(array, k, 0, length - 1);
+        int lastK = getLastK(array, k, 0, length - 1);
+        if (firstK != -1 && lastK != -1) {
+            return lastK - firstK + 1;
+        }
+        return 0;
+    }
+
+    //递归写法
+    private int getFirstK(int[] array, int k, int start, int end) {
+        if (start > end) {
+            return -1;
+        }
+        int mid = (start + end) >> 1;
+        if (array[mid] > k) {
+            return getFirstK(array, k, start, mid - 1);
+        } else if (array[mid] < k) {
+            return getFirstK(array, k, mid + 1, end);
+        } else if (mid - 1 >= 0 && array[mid - 1] == k) {
+            return getFirstK(array, k, start, mid - 1);
+        } else {
+            return mid;
+        }
+    }
+
+    //循环写法
+    private int getLastK(int[] array, int k, int start, int end) {
+        int length = array.length;
+        int mid = (start + end) >> 1;
+        while (start <= end) {
+            if (array[mid] > k) {
+                end = mid - 1;
+            } else if (array[mid] < k) {
+                start = mid + 1;
+            } else if (mid + 1 < length && array[mid + 1] == k) {
+                start = mid + 1;
+            } else {
+                return mid;
+            }
+            mid = (start + end) >> 1;
+        }
+        return -1;
+    }
+
+    /*
+    如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。
+    如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+     */
+    class MediumInNumStream {
+        private int count = 0;  // 数据流中的数据个数
+        // 优先队列集合实现了堆，默认实现的小根堆
+        private PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        // 定义大根堆，更改比较方式
+        private PriorityQueue<Integer> maxHeap = new PriorityQueue<>((o1, o2) -> {
+            return o2 - o1;     // o1 - o2 则是小根堆
+        });
+
+        public void Insert(Integer num) {
+            if ((count & 1) == 0) {
+                // 当数据总数为偶数时，新加入的元素，应当进入小根堆
+                // （注意不是直接进入小根堆，而是经大根堆筛选后取大根堆中最大元素进入小根堆）
+                // 1.新加入的元素先入到大根堆，由大根堆筛选出堆中最大的元素
+                maxHeap.offer(num);
+                int filteredMaxNum = maxHeap.poll();
+                // 2.筛选后的【大根堆中的最大元素】进入小根堆
+                minHeap.offer(filteredMaxNum);
+            } else {
+                // 当数据总数为奇数时，新加入的元素，应当进入大根堆
+                // （注意不是直接进入大根堆，而是经小根堆筛选后取小根堆中最大元素进入大根堆）
+                // 1.新加入的元素先入到小根堆，由小根堆筛选出堆中最小的元素
+                minHeap.offer(num);
+                int filteredMinNum = minHeap.poll();
+                // 2.筛选后的【小根堆中的最小元素】进入小根堆
+                maxHeap.offer(filteredMinNum);
+            }
+            count++;
+        }
+
+
+        public Double GetMedian() {
+            // 数目为偶数时，中位数为小根堆堆顶元素与大根堆堆顶元素和的一半
+            if ((count & 1) == 0) {
+                return new Double((minHeap.peek() + maxHeap.peek())) / 2;
+            } else {
+                return new Double(minHeap.peek());
+            }
+        }
+
+    }
+
+    public int TreeDepth(TreeNode root) {
+        if (root == null) return 0;
+        int left = TreeDepth(root.left);
+        int right = TreeDepth(root.right);
+        return Math.max(left, right) + 1;
+    }
+
+    public boolean IsBalanced_Solution(TreeNode root) {
+        return getDepth(root) != -1;
+    }
+
+    private int getDepth(TreeNode root) {
+        if (root == null) return 0;
+        int leftHeight = getDepth(root.left);
+        if (leftHeight == -1) return -1;
+        int rightHeight = getDepth(root.right);
+        if (rightHeight == -1) return -1;
+        return Math.abs(leftHeight - rightHeight) > 1 ? -1 : 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    /*
+    一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+    //num1,num2分别为长度为1的数组。传出参数
+    //将num1[0],num2[0]设置为返回结果
+     */
+    public void FindNumsAppearOnce(int[] array, int num1[], int num2[]) {
+        if (array == null || array.length <= 1) {
+            num1[0] = num2[0] = 0;
+            return;
+        }
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            sum ^= array[i];
+        }
+        int index = 0;
+        // 找到从右往左第一个1
+        for (int i = 0; i < 32; i++) {
+            if ((sum & (1 << i)) != 0) {
+                index = i;
+                break;
+            }
+        }
+        // 根据这第一个1把数组分为两部分
+        for (int i = 0; i < array.length; i++) {
+            if ((array[i] & (1 << index)) != 0) {
+                num2[0] ^= array[i];
+            } else {
+                num1[0] ^= array[i];
+            }
+        }
+    }
+
+
+    /*
+     * 数组a中只有一个数出现一次，其他数都出现了2次，找出这个数字
+     *
+     */
+    public static int find1From2(int[] a) {
+        int len = a.length, res = 0;
+        for (int i = 0; i < len; i++) {
+            res = res ^ a[i];
+        }
+        return res;
+    }
+
+
+    /*
+     * 数组a中只有一个数出现一次，其他数字都出现了3次，找出这个数字
+     */
+    public static int find1From3(int[] a) {
+        int[] bits = new int[32];
+        int len = a.length;
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < 32; j++) {
+                bits[j] = bits[j] + ((a[i] >>> j) & 1);
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < 32; i++) {
+            if (bits[i] % 3 != 0) {
+                res = res | (1 << i);
+            }
+        }
+        return res;
+    }
+
+    /*
+    输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序
+     */
+    public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        int start = 1, end = 2;
+        while (start != (sum + 1) / 2) {
+            int localSum = 0;
+            for (int i = start; i <= end; i++) {
+                localSum += i;
+            }
+            if (localSum == sum) {
+                ArrayList<Integer> list = new ArrayList<>();
+                for (int i = start; i <= end; i++) {
+                    list.add(i);
+                }
+                res.add(list);
+                start++;
+                end++;
+            } else if (localSum > sum) {
+                start++;
+            } else {
+                end++;
+            }
+        }
+        return res;
+    }
+
+    /*
+    输入一个递增排序的数组和一个数字S，在数组中查找两个数，是的他们的和正好是S，
+    如果有多对数字的和等于S，输出两个数的乘积最小的。
+     */
+    public ArrayList<Integer> FindNumbersWithSum(int[] array, int sum) {
+        ArrayList<Integer> list = new ArrayList<>();
+        if (array == null || array.length < 2) {
+            return list;
+        }
+        int i = 0, j = array.length - 1;
+        while (i < j) {
+            if (array[i] + array[j] == sum) {
+                list.add(array[i]);
+                list.add(array[j]);
+                return list;
+            } else if (array[i] + array[j] > sum) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+
+        return list;
+    }
+
+    /*
+    对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。
+    例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。
+     */
+    public String LeftRotateString(String str, int n) {
+        if (str == null) return null;
+        if (str.length() == 0 || n == 0)  return str;
+        char[] c = str.toCharArray();
+        int length = c.length;
+        swapArray(c, 0, length - 1);
+        swapArray(c, 0, length - 1 - n);
+        swapArray(c, length - n, length - 1);
+        return String.valueOf(c);
+    }
+
+    private void swapArray(char[] c, int start, int end) {
+        for (int i = 0; i < (end - start+ 1) / 2 ; i++) {
+            char tmp = c[start + i];
+            c[start + i] = c[end - i];
+            c[end - i] = tmp;
+        }
+    }
+
+
+
+
 }
