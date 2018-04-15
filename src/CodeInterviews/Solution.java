@@ -1143,7 +1143,7 @@ public class Solution {
      */
     public String LeftRotateString(String str, int n) {
         if (str == null) return null;
-        if (str.length() == 0 || n == 0)  return str;
+        if (str.length() == 0 || n == 0) return str;
         char[] c = str.toCharArray();
         int length = c.length;
         swapArray(c, 0, length - 1);
@@ -1153,14 +1153,527 @@ public class Solution {
     }
 
     private void swapArray(char[] c, int start, int end) {
-        for (int i = 0; i < (end - start+ 1) / 2 ; i++) {
+        for (int i = 0; i < (end - start + 1) / 2; i++) {
             char tmp = c[start + i];
             c[start + i] = c[end - i];
             c[end - i] = tmp;
         }
     }
 
+    /*
+    输入："I am a student."
+
+    输出："student. a am I"
+     */
+    public String ReverseSentence(String str) {
+        if (str.length() == 0) return str;
+        int n = str.length();
+        char[] c = str.toCharArray();
+        int i = 0, j = 0;
+        while (j <= n) {
+            if (j == n || c[j] == ' ') {
+                swapArray(c, i, j - 1);
+                i = j + 1;
+            }
+            j++;
+        }
+        swapArray(c, 0, n - 1);
+        return new String(c);
+    }
+
+    /*
+    五张牌，其中大小鬼为癞子，牌面大小为 0。判断是否能组成顺子。
+     */
+    public boolean isContinuous(int[] numbers) {
+        if (numbers.length < 5) return false;
+        // 排序
+        Arrays.sort(numbers);
+        // 统计癞子个数
+        int cnt = 0;
+        for (int num : numbers) {
+            if (num == 0) cnt++;
+        }
+        for (int i = cnt; i < numbers.length - 1; i++) {
+            if (numbers[i + 1] == numbers[i]) return false;
+            int interval = numbers[i + 1] - numbers[i] - 1;
+            if (interval > cnt) return false;
+            cnt -= interval;
+        }
+        return true;
+    }
+
+    /*
+    让小朋友们围成一个大圈。然后，他随机指定一个数 m，让编号为 0 的小朋友开始报数。
+    每次喊到 m-1 的那个小朋友要出列唱首歌，然后可以在礼品箱中任意的挑选礼物，并且不再回到圈中，
+    从他的下一个小朋友开始，继续 0...m-1 报数 .... 这样下去 .... 直到剩下最后一个小朋友，可以不用表演。
+
+    约瑟夫环，圆圈长度为 n 的解可以看成长度为 n-1 的解再加上报数的长度 m。因为是圆圈，所以最后需要对 n 取余。
+     */
+    public int LastRemaining_Solution(int n, int m) {
+        if (n == 0) return -1;
+        if (n == 1) return 0;
+        return (LastRemaining_Solution(n - 1, m) + m) % n;
+    }
+
+    /*
+    求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+     */
+    public int Sum_Solution(int n) {
+        int sum = n;
+        boolean b = (n > 0) && ((sum += Sum_Solution(n - 1)) > 0);
+        return sum;
+    }
+
+    /*
+    写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+     */
+    public int Add(int num1, int num2) {
+        if (num2 == 0) return num1;
+        return Add(num1 ^ num2, (num1 & num2) << 1);
+    }
+
+    /*
+    将一个字符串转换成一个整数，要求不能使用字符串转换整数的库函数。 数值为0或者字符串不是一个合法的数值则返回0
+     */
+    public int StrToInt(String str) {
+        int res = 0;
+        boolean isNegtive = false;
+        for (int i = 0; i < str.length(); i++) {
+            if (Character.isDigit(str.charAt(i))) {
+                res = res * 10 + str.charAt(i) - '0';
+            } else if (i == 0 && str.charAt(i) == '+') {
+                continue;
+            } else if (i == 0 && str.charAt(i) == '-') {
+                isNegtive = true;
+            } else {
+                return 0;
+            }
+        }
+        return isNegtive ? -res : res;
+    }
+
+    /*
+    在一个长度为n的数组里的所有数字都在0到n-1的范围内。
+    数组中某些数字是重复的，但不知道有几个数字是重复的。
+    也不知道每个数字重复几次。请找出数组中任意一个重复的数字。
+    例如，如果输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出是第一个重复的数字2。
+     */
+    /*
+    // Parameters:
+    //    numbers:     an array of integers
+    //    length:      the length of array numbers
+    //    duplication: (Output) the duplicated number in the array number,length of duplication array is 1,so using duplication[0] = ? in implementation;
+    //                  Here duplication like pointor in C/C++, duplication[0] equal *duplication in C/C++
+    //    这里要特别注意~返回任意重复的一个，赋值duplication[0]
+    // Return value:       true if the input is valid, and there are some duplications in the array number
+    //                     otherwise false
+     */
+    public boolean duplicate(int numbers[], int length, int[] duplication) {
+        for (int i = 0; i < length; i++) {
+            if (i == numbers[i]) {
+                continue;
+            } else {
+                while (numbers[i] != i && numbers[i] != numbers[numbers[i]]) {
+                    swap(numbers, i, numbers[i]);
+                }
+                if (numbers[i] != i && numbers[i] == numbers[numbers[i]]) {
+                    duplication[0] = numbers[i];
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void swap(int[] arr, int i, int j) {
+        int tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
+
+    /*
+    给定一个数组A[0,1,...,n-1],请构建一个数组B[0,1,...,n-1],
+    其中B中的元素B[i]=A[0]*A[1]*...*A[i-1]*A[i+1]*...*A[n-1]。
+    不能使用除法。
+     */
+    public int[] multiply(int[] A) {
+        int n = A.length;
+        int[] B = new int[n];
+        for (int i = 0, product = 1; i < n; product *= A[i], i++) {
+            B[i] = product;
+        }
+        for (int i = n - 1, product = 1; i >= 0; product *= A[i], i--) {
+            B[i] *= product;
+        }
+        return B;
+    }
+
+    /*
+    请实现一个函数用来匹配包括'.'和'*'的正则表达式。
+    模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（包含0次）。
+    在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，
+    但是与"aa.a"和"ab*a"均不匹配
+
+     */
+    public boolean match(char[] str, char[] pattern) {
+        int m = str.length, n = pattern.length;
+        boolean[][] dp = new boolean[m + 1][n + 1];
+        dp[0][0] = true;
+        for (int i = 1; i <= n; i++) {
+            if (pattern[i - 1] == '*') {
+                dp[0][i] = dp[0][i - 2];
+            }
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (str[i - 1] == pattern[j - 1] || pattern[j - 1] == '.') {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else if (pattern[j - 1] == '*') {
+                    if (pattern[j - 2] == str[i - 1] || pattern[j - 2] == '.') {
+                        dp[i][j] = dp[i][j - 1] || dp[i][j - 2] || dp[i - 1][j];
+                    } else {
+                        dp[i][j] = dp[i][j - 2];
+                    }
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    /*
+    请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。
+    例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。
+    但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+     */
+    public boolean isNumeric(char[] str) {
+        return new String(str).matches("[+-]?\\d*(\\.\\d+)?([eE][+-]?\\d+)?");
+    }
+
+    class FirstAppearingOnce {
+        BitSet bs1 = new BitSet(256);
+        BitSet bs2 = new BitSet(256);
+        StringBuffer s = new StringBuffer();
+
+        //Insert one char from stringstream
+        public void Insert(char ch) {
+            s.append(ch);
+            if (!bs1.get(ch) && !bs2.get(ch)) {
+                bs1.set(ch);
+            } else if (bs1.get(ch) && !bs2.get(ch)) {
+                bs2.set(ch);
+            }
+        }
+
+        //return the first appearence once char in current stringstream
+        public char FirstAppearingOnce() {
+            char[] str = s.toString().toCharArray();
+            for (char c : str) {
+                if (bs1.get(c) && !bs2.get(c)) {
+                    return c;
+                }
+            }
+            return '#';
+        }
+    }
+
+    /*
+    一个链表中包含环，请找出该链表的环的入口结点。
+     */
+    public ListNode EntryNodeOfLoop(ListNode pHead) {
+        if (pHead == null) return null;
+        ListNode slow = pHead, fast = pHead;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                fast = pHead;
+                while (slow != fast) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+
+    /*
+    在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。
+    例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+     */
+    public ListNode deleteDuplication(ListNode pHead) {
+        ListNode dummy = new ListNode(-1);//设置一个trick
+        dummy.next = pHead;
+
+        ListNode p = pHead;
+        ListNode pre = dummy;
+        while (p != null && p.next != null) {
+            if (p.val == p.next.val) {
+                int val = p.val;
+                while (p != null && p.val == val)
+                    p = p.next;
+                pre.next = p;
+            } else {
+                pre = p;
+                p = p.next;
+            }
+        }
+        return dummy.next;
+    }
+
+    public class TreeLinkNode {
+        int val;
+        TreeLinkNode left = null;
+        TreeLinkNode right = null;
+        TreeLinkNode next = null;
+
+        TreeLinkNode(int val) {
+            this.val = val;
+        }
+    }
+
+    /*
+    给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。
+    注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
+     */
+    public TreeLinkNode GetNext(TreeLinkNode pNode) {
+        if (pNode.right != null) {
+            TreeLinkNode node = pNode.right;
+            while (node.left != null) {
+                node = node.left;
+            }
+            return node;
+        } else {
+            while (pNode.next != null) {
+                TreeLinkNode parent = pNode.next;
+                if (parent.left == pNode) {
+                    return parent;
+                }
+                pNode = pNode.next;
+            }
+        }
+        return null;
+    }
+
+    /*
+    请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+     */
+    boolean isSymmetrical(TreeNode pRoot) {
+        if (pRoot == null) return true;
+        return isSymmetrical(pRoot.left, pRoot.right);
+    }
+
+    private boolean isSymmetrical(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 == null) return true;
+        if (t1 == null || t2 == null) return false;
+        if (t1.val != t2.val) return false;
+        return isSymmetrical(t1.left, t2.right) && isSymmetrical(t1.right, t2.left);
+    }
+
+    /*
+    请实现一个函数按照之字形打印二叉树，
+    即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
+     */
+    public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
+        if (pRoot == null) return ret;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(pRoot);
+        boolean reverse = false;
+        while (!queue.isEmpty()) {
+            int cnt = queue.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int i = 0; i < cnt; i++) {
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+            if (reverse) Collections.reverse(list);
+            reverse = !reverse;
+            ret.add(list);
+        }
+        return ret;
+    }
+
+    /*
+    从上到下按层打印二叉树，同一层结点从左至右输出。每一层输出一行。
+     */
+    ArrayList<ArrayList<Integer>> Print1(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
+        if (pRoot == null) return ret;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(pRoot);
+        while (!queue.isEmpty()) {
+            int cnt = queue.size();
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int i = 0; i < cnt; i++) {
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+            ret.add(list);
+        }
+        return ret;
+    }
+
+    /*
+    序列化二叉树
+    思路：前序遍历，遇到null设为#
+     */
+    class Serialize {
+        public int index = -1;
+
+        public String Serialize(TreeNode root) {
+            StringBuffer sb = new StringBuffer();
+            if (root == null) {
+                sb.append("#,");
+                return sb.toString();
+            }
+            sb.append(root.val + ",");
+            sb.append(Serialize(root.left));
+            sb.append(Serialize(root.right));
+            return sb.toString();
+        }
+
+        public TreeNode Deserialize(String str) {
+            index++;
+            int len = str.length();
+            if (index >= len) {
+                return null;
+            }
+            String[] strr = str.split(",");
+            TreeNode node = null;
+            if (!strr[index].equals("#")) {
+                node = new TreeNode(Integer.valueOf(strr[index]));
+                node.left = Deserialize(str);
+                node.right = Deserialize(str);
+            }
+
+            return node;
+        }
 
 
+    }
 
+    /*
+        给定一颗二叉搜索树，请找出其中的第k大的结点。
+        例如， 5 / \ 3 7 /\ /\ 2 4 6 8 中，按结点数值大小顺序第三个结点的值为4。
+         */
+    class KthNode {
+        private TreeNode ret;
+        private int cnt = 0;
+
+        public TreeNode KthNode(TreeNode pRoot, int k) {
+            inOrder(pRoot, k);
+            return ret;
+        }
+
+        private void inOrder(TreeNode root, int k) {
+            if (root == null) return;
+            if (cnt > k) return;
+            inOrder(root.left, k);
+            cnt++;
+            if (cnt == k) ret = root;
+            inOrder(root.right, k);
+        }
+    }
+
+    /*
+    给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。
+    例如，如果输入数组{2,3,4,2,6,2,5,1}及滑动窗口的大小3，那么一共存在6个滑动窗口，
+    他们的最大值分别为{4,4,6,6,6,5}； 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个：
+    {[2,3,4],2,6,2,5,1}， {2,[3,4,2],6,2,5,1}， {2,3,[4,2,6],2,5,1}， {2,3,4,[2,6,2],5,1}，
+    {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}。
+     */
+    public ArrayList<Integer> maxInWindows(int[] num, int size) {
+        ArrayList<Integer> ret = new ArrayList<>();
+        if (size > num.length || size < 1) return ret;
+
+        // 构建最大堆，即堆顶元素是堆的最大值。
+        PriorityQueue<Integer> heap = new PriorityQueue<>((o1, o2) -> o2 - o1);
+        for (int i = 0; i < size; i++)
+            heap.add(num[i]);
+
+        ret.add(heap.peek());
+        for (int i = 1; i + size - 1 < num.length; i++) {
+            heap.remove(num[i - 1]);
+            heap.add(num[i + size - 1]);
+            ret.add(heap.peek());
+        }
+        return ret;
+    }
+
+    /*
+    请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。
+    路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。
+    如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。
+    例如 a b c e s f c s a d e e 矩阵中包含一条字符串"bcced"的路径，
+    但是矩阵中不包含"abcb"路径，
+    因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+     */
+    class hasPath {
+        public boolean hasPath(char[] matrix, int rows, int cols, char[] str) {
+            int flag[] = new int[matrix.length];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (helper(matrix, rows, cols, i, j, str, 0, flag))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean helper(char[] matrix, int rows, int cols, int i, int j, char[] str, int k, int[] flag) {
+            int index = i * cols + j;
+            if (i < 0 || i >= rows || j < 0 || j >= cols || matrix[index] != str[k] || flag[index] == 1)
+                return false;
+            if (k == str.length - 1) return true;
+            flag[index] = 1;
+            if (helper(matrix, rows, cols, i - 1, j, str, k + 1, flag)
+                    || helper(matrix, rows, cols, i + 1, j, str, k + 1, flag)
+                    || helper(matrix, rows, cols, i, j - 1, str, k + 1, flag)
+                    || helper(matrix, rows, cols, i, j + 1, str, k + 1, flag)) {
+                return true;
+            }
+            flag[index] = 0;
+            return false;
+        }
+    }
+
+    /*
+    地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，
+    但是不能进入行坐标和列坐标的数位之和大于k的格子。
+    例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。
+    但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+     */
+    class movingCount {
+        public int movingCount(int threshold, int rows, int cols) {
+            int flag[][] = new int[rows][cols]; //记录是否已经走过
+            return helper(0, 0, rows, cols, flag, threshold);
+        }
+
+        private int helper(int i, int j, int rows, int cols, int[][] flag, int threshold) {
+            if (i < 0 || i >= rows || j < 0 || j >= cols
+                    || numSum(i) + numSum(j) > threshold
+                    || flag[i][j] == 1)
+                return 0;
+            flag[i][j] = 1;
+            return helper(i - 1, j, rows, cols, flag, threshold)
+                    + helper(i + 1, j, rows, cols, flag, threshold)
+                    + helper(i, j - 1, rows, cols, flag, threshold)
+                    + helper(i, j + 1, rows, cols, flag, threshold) + 1;
+        }
+
+
+        private int numSum(int i) {
+            int sum = 0;
+            do {
+                sum += i % 10;
+            } while ((i = i / 10) > 0);
+            return sum;
+        }
+    }
 }
+
