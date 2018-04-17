@@ -6,7 +6,6 @@ package DataStructure;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,12 +21,12 @@ import java.util.List;
 public class Sort {
     public static void main(String[] args) {
         int[] arr = {2, 8, 10, 5, 6, 3, 4, 2, 7, 5};
-        int[] result = BubbleSort(arr);
+//        int[] result = BubbleSort(arr);
 //        int[] result = SelectionSort(arr);
 //        int[] result = InsertionSort(arr);
 //        int[] result = ShellSort(arr);
 //        int[] result = MergeSort(arr);
-//        int[] result = HeapSort(arr);
+        int[] result = HeapSort(arr);
 //        int[] result = QuickSort(arr);
 //        int[] result = CountingSort(arr);
 //        int[] result = BucketSort(arr);
@@ -110,7 +109,7 @@ public class Sort {
     }
 
     /*
-    先自顶向下分裂，再自顶向上排序，排序时另外开辟空间，双指针操作，时间复杂度为O(n)
+    先自顶向下分裂，再自底向上排序，排序时另外开辟空间，双指针操作，时间复杂度为O(n)
     稳定
      */
     public static int[] MergeSort(int[] arr) {
@@ -138,7 +137,7 @@ public class Sort {
         int j = mid + 1;    // 右指针
         int k = 0;
         while (i <= mid && j <= high) {
-            if (arr[i] < arr[j]) temp[k++] = arr[i++];
+            if (arr[i] <= arr[j]) temp[k++] = arr[i++];
             else temp[k++] = arr[j++];
         }
         while (i <= mid) temp[k++] = arr[i++];
