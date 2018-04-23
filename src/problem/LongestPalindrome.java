@@ -2,7 +2,7 @@ package problem;
 
 public class LongestPalindrome {
     /*
-    最长回文子串
+    最长回文子串，不一定连续
     */
     public void longestPalindrome(String s) {
         int[][] dp = new int[s.length()][s.length()];
